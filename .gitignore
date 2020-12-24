@@ -3,4 +3,4 @@
 ./cmd/share-secret/service
 
 # ide files
-./idea
+.idea
