@@ -1,0 +1,6 @@
+# binary files
+./share-secret
+./cmd/share-secret/service
+
+# ide files
+./idea
