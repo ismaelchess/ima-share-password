@@ -11,7 +11,7 @@ GOPATH := $(GOPATH)
 
 FORCE:
 
-dev:get up logs
+dev:get up log
 
 clean: down
 
@@ -27,7 +27,7 @@ jenkins: test
 lint:
 	docker run --rm -v "$(GOPATH)/pkg":/go/pkg -v $(PWD):/app -w /app golangci/golangci-lint:v1.33.0 golangci-lint run --timeout 5m
 
-logs:
+log:
 	docker-compose logs -f
 
 test:
