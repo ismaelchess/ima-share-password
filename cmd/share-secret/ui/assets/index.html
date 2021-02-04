@@ -7,35 +7,35 @@
   <body>
         <h1>Share-Secret</h1>
 
-        <form enctype="multipart/form-data" method="post" name="formsrecret")>
-          <label for="name">Valor:</label>
+        <form id="secret-form">
+          <label for="secret">Valor:</label>
           <br>
-          <input type="text" id="xvalue" name="xvalue" required  minlength="1" maxlength="200" size="50">
-
+          <input type="text" id="secret" name="secret" required  minlength="1" maxlength="200" size="50" />
           <button id="btn-get">Obtener Liga a Compartir</button>
         </form>
         <script>
-           const load = () => {   
-            var btn = document.getElementById("btn-get")
-            
-            btn.addEventListener("click",function(){
-             alert('ok')
-             
-             var url = "http://localhost:8080/secret";
-             var data = {secretvalue: 'ejemplo', secrettime:60};
-              
-             fetch(url, {
-                method: "POST",                
-                body: JSON.stringify(data),
-                mode: 'no-cors',
-                headers:{
-                  'Content-Type': 'application/json;charset=UTF-8'
-                }}).the(result => result.json()) //alert(JSON.stringify(result, null,2)))
-                .then(response => alert(response))
-                .catch(error => console.error('Error:', error));
-                
-            })
-          
+            function handlePostSecret(secret){
+                var url = "http://localhost:8080/secret";
+                var data = {secret};
+                var config = {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    mode: 'cors',
+                }
+
+                fetch(url, config).then(response => {
+                        return response.json()
+                })
+                    .then(data => console.log(data))
+            }
+
+           const load = () => {
+                var btn = document.getElementById("btn-get")
+                btn.addEventListener("click",function(e){
+                    e.preventDefault()
+                    var input = document.getElementById('secret')
+                    handlePostSecret(input.value)
+                })
             }
             window.onload = load;
         </script>

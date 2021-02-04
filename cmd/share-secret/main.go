@@ -30,23 +30,33 @@ func run() error {
 		}
 	})
 
-	r.HandleFunc("/secret", sharesecretpost).Methods(http.MethodPost)
+	r.Handle("/secret", Apply(PostSecret(), CORSWithDefaults())).Methods(http.MethodPost)
 	r.HandleFunc("/secret/{key}", sharesecretlink).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 	return nil
 }
 
-func sharesecretpost(w http.ResponseWriter, r *http.Request) {
-
-	var secretData Secret
-	json.NewDecoder(r.Body).Decode(&secretData)
-
-	fmt.Println(r.Body)
-	fmt.Println(secretData)
-	secretData.SecretTime = 0
-
-	json.NewEncoder(w).Encode(secretData)
+func PostSecret() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		input := struct {
+			Secret string
+		}{}
+		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		data, err := json.Marshal(&struct {
+			URI string `json:"uri"`
+		}{
+			URI: "https://example.com/secret/123456789",
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(data)
+	}
 }
 
 func sharesecretlink(w http.ResponseWriter, r *http.Request) {
