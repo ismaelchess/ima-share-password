@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Share-Secret</title>
+  </head>
+  <body>
+        <h1>Share-Secret</h1>
+
+        <form enctype="multipart/form-data" method="post" name="formsrecret")>
+          <label for="name">Valor:</label>
+          <br>
+          <input type="text" id="xvalue" name="xvalue" required  minlength="1" maxlength="200" size="50">
+
+          <button id="btn-get">Obtener Liga a Compartir</button>
+        </form>
+        <script>
+           const load = () => {   
+            var btn = document.getElementById("btn-get")
+            
+            btn.addEventListener("click",function(){
+             alert('ok')
+             
+             var url = "http://localhost:8080/secret";
+             var data = {secretvalue: 'ejemplo', secrettime:60};
+              
+             fetch(url, {
+                method: "POST",                
+                body: JSON.stringify(data),
+                mode: 'no-cors',
+                headers:{
+                  'Content-Type': 'application/json;charset=UTF-8'
+                }}).the(result => result.json()) //alert(JSON.stringify(result, null,2)))
+                .then(response => alert(response))
+                .catch(error => console.error('Error:', error));
+                
+            })
+          
+            }
+            window.onload = load;
+        </script>
+
+  </body>
+</html>
