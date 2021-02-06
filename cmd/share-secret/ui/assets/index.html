@@ -8,15 +8,29 @@
         <h1>Share-Secret</h1>
 
         <form id="secret-form">
-          <label for="secret">Valor:</label>
+          <label for="secret">Secret Text:</label>
           <br>
-          <input type="text" id="secret" name="secret" required  minlength="1" maxlength="200" size="50" />
+          <input type="text" id="secret" name="secret" required  minlength="1" maxlength="200" size="50" />          
+          <br>
+          <label for="secret">Time expiration:</label>
+          <br>          
+          <select name="unit" id="unit">            
+            <option value="m">Minute</option>
+            <option value="h">Hour</option>
+            <option value="d">Day</option>
+          </select>
+          <input type="number" id="time" name="time" required  minlength="1" maxlength="2" size="2" />          
+          <br> 
+          <br>           
           <button id="btn-get">Obtener Liga a Compartir</button>
         </form>
         <script>
-            function handlePostSecret(secret){
+            function handlePostSecret(secret, unit, time){
                 var url = "http://localhost:8080/secret";
-                var data = {secret};
+
+                ntime = !isNaN(time) ? parseInt(time, 10) : 0;
+                var data = {secret:secret, unit:unit, time: ntime};
+                
                 var config = {
                     method: "POST",
                     body: JSON.stringify(data),
@@ -26,15 +40,28 @@
                 fetch(url, config).then(response => {
                         return response.json()
                 })
-                    .then(data => console.log(data))
+                .then(data => console.log(data))
             }
 
            const load = () => {
                 var btn = document.getElementById("btn-get")
+
                 btn.addEventListener("click",function(e){
                     e.preventDefault()
-                    var input = document.getElementById('secret')
-                    handlePostSecret(input.value)
+                    var input     = document.getElementById('secret')
+                    var cbo_u     = document.getElementById('unit')
+                    var input_t   = document.getElementById('time')
+                
+                  if (input.value == '') {
+                    alert('The secret value is required');
+                    return
+                  }
+                  if (input_t.value == '') {
+                    alert('The amount of time required');
+                    return
+                  }
+
+                    handlePostSecret(input.value, cbo_u.value, input_t.value)
                 })
             }
             window.onload = load;

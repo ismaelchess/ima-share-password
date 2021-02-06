@@ -9,11 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Secret struct {
-	SecretValue string `json:"secretvalue"`
-	SecretTime  int    `json:"secrettime"`
-}
-
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
@@ -41,11 +36,15 @@ func PostSecret() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		input := struct {
 			Secret string
+			Unit   string
+			Time   int64
 		}{}
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		fmt.Println(input)
+
 		data, err := json.Marshal(&struct {
 			URI string `json:"uri"`
 		}{
