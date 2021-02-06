@@ -7,10 +7,10 @@
   <body>
         <h1>Share-Secret</h1>
 
-        <form id="secret-form">
+        <form>
           <label for="secret">Secret Text:</label>
           <br>
-          <input type="text" id="secret" name="secret" required  minlength="1" maxlength="200" size="50" />          
+          <textarea id="secret" name="secret" required  minlength="1" maxlength="400" rows="10" cols="50"></textarea>
           <br>
           <label for="secret">Time expiration:</label>
           <br>          
@@ -22,7 +22,7 @@
           <input type="number" id="time" name="time" required  minlength="1" maxlength="2" size="2" />          
           <br> 
           <br>           
-          <button id="btn-get">Obtener Liga a Compartir</button>
+          <button id="btn-get">Share Data</button>
         </form>
         <script>
             function handlePostSecret(secret, unit, time){

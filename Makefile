@@ -20,10 +20,7 @@ down:
 
 get:
 	go get -t ./...
-
-# this target is a Jenkins simulation
-jenkins: test
-
+	
 lint:
 	docker run --rm -v "$(GOPATH)/pkg":/go/pkg -v $(PWD):/app -w /app golangci/golangci-lint:v1.33.0 golangci-lint run --timeout 5m
 

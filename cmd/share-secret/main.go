@@ -26,9 +26,12 @@ func run() error {
 	})
 
 	r.Handle("/secret", Apply(PostSecret(), CORSWithDefaults())).Methods(http.MethodPost)
-	r.HandleFunc("/secret/{key}", sharesecretlink).Methods(http.MethodGet)
+	r.HandleFunc("/secret/{key}", GetSecret).Methods(http.MethodGet)
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	err := http.ListenAndServe(":8080", r)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return nil
 }
 
@@ -43,8 +46,6 @@ func PostSecret() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Println(input)
-
 		data, err := json.Marshal(&struct {
 			URI string `json:"uri"`
 		}{
@@ -58,9 +59,9 @@ func PostSecret() http.HandlerFunc {
 	}
 }
 
-func sharesecretlink(w http.ResponseWriter, r *http.Request) {
+func GetSecret(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("xxxxxxx")
+	fmt.Println("Not Implemented")
 
 	// var secretData Secret
 	// json.NewDecoder(r.Body).Decode(&secretData)
