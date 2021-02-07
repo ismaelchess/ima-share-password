@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  share-secret:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/dev.Dockerfile
+    working_dir: /go/src/github.com/ismaelchess/share-secret
+    volumes:
+      - .:/go/src/github.com/ismaelchess/share-secret
+    ports:
+    - 8080:8080
