@@ -9,7 +9,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var mData map[string]StoreData
+
 func main() {
+	mData = make(map[string]StoreData)
+
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +30,7 @@ func run() error {
 	})
 
 	r.Handle("/secret", Apply(PostSecret(), CORSWithDefaults())).Methods(http.MethodPost)
-	r.HandleFunc("/secret/{key}", GetSecret).Methods(http.MethodGet)
+	r.Handle("/secret/{key}", Apply(GetSecret(), CORSWithDefaults())).Methods(http.MethodGet)
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
@@ -37,19 +41,20 @@ func run() error {
 
 func PostSecret() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		input := struct {
-			Secret string
-			Unit   string
-			Time   int64
-		}{}
+		var input StoreData
+
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		keyData := input.GetKey()
+		mData[keyData] = input
+
 		data, err := json.Marshal(&struct {
 			URI string `json:"uri"`
 		}{
-			URI: "https://example.com/secret/123456789",
+			URI: "https://localhost:8080/secret/" + keyData,
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -59,12 +64,30 @@ func PostSecret() http.HandlerFunc {
 	}
 }
 
-func GetSecret(w http.ResponseWriter, r *http.Request) {
+func GetSecret() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("Not Implemented")
+		key := mux.Vars(r)["key"]
+		if key == "" {
+			http.Error(w, "The path is not complete", http.StatusInternalServerError)
+			return
+		}
 
-	// var secretData Secret
-	// json.NewDecoder(r.Body).Decode(&secretData)
-	// fmt.Println(r.Body)
-	// fmt.Println(secretData)
+		data := mData[key]
+		if data.Secret == "" {
+			http.Error(w, "No data", http.StatusInternalServerError)
+			return
+		}
+
+		wData, err := json.Marshal(&struct {
+			Data string `json:"data"`
+		}{data.Secret})
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(wData)
+
+	}
 }
