@@ -7,21 +7,15 @@ import (
 )
 
 type StoreData struct {
-	Secret     string
-	Unit       string
-	Time       int64
-	Registered *time.Time
-	Expire     *time.Time
+	Secret string
+	Unit   string
+	Time   int
 }
 
-func (s *StoreData) GetExpirationDate() *time.Time {
-	return nil
+func (s *StoreData) expirationDate() time.Duration {
+	return time.Duration(time.Minute + 2)
 }
 
-func (s *StoreData) GetShareData() string {
-
-	return ""
-}
 func (s *StoreData) GetKey() string {
 	return uuid.New().String()
 }

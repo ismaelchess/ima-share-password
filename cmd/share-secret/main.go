@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
-var mData map[string]StoreData
+var mData sync.Map
 
 func main() {
-	mData = make(map[string]StoreData)
 
 	if err := run(); err != nil {
 		log.Fatal(err)
@@ -49,12 +50,17 @@ func PostSecret() http.HandlerFunc {
 		}
 
 		keyData := input.GetKey()
-		mData[keyData] = input
+		mData.Store(keyData, input.Secret)
+
+		time.AfterFunc(input.expirationDate(), func() {
+			fmt.Println("Borrado")
+			mData.Delete(keyData)
+		})
 
 		data, err := json.Marshal(&struct {
 			URI string `json:"uri"`
 		}{
-			URI: "https://localhost:8080/secret/" + keyData,
+			URI: "http://localhost:8080/secret/" + keyData,
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,15 +79,17 @@ func GetSecret() http.HandlerFunc {
 			return
 		}
 
-		data := mData[key]
-		if data.Secret == "" {
+		result, ok := mData.Load(key)
+		if !ok {
 			http.Error(w, "No data", http.StatusInternalServerError)
 			return
 		}
 
 		wData, err := json.Marshal(&struct {
 			Data string `json:"data"`
-		}{data.Secret})
+		}{
+			Data: result.(string),
+		})
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
