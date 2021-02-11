@@ -13,7 +13,13 @@ type StoreData struct {
 }
 
 func (s *StoreData) expirationDate() time.Duration {
-	return time.Duration(time.Minute + 2)
+	switch s.Unit {
+	case "h":
+		return time.Duration(s.Time) * time.Hour
+	case "d":
+		return time.Duration(s.Time*24) * time.Hour
+	}
+	return time.Duration(s.Time) * time.Minute
 }
 
 func (s *StoreData) GetKey() string {

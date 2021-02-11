@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"sync"
@@ -51,9 +52,7 @@ func PostSecret() http.HandlerFunc {
 
 		keyData := input.GetKey()
 		mData.Store(keyData, input.Secret)
-
 		time.AfterFunc(input.expirationDate(), func() {
-			fmt.Println("Borrado")
 			mData.Delete(keyData)
 		})
 
@@ -73,6 +72,16 @@ func PostSecret() http.HandlerFunc {
 func GetSecret() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		type Result struct {
+			Data string
+		}
+
+		templateSecret, err := template.ParseFiles("./cmd/share-secret/ui/assets/secret.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		key := mux.Vars(r)["key"]
 		if key == "" {
 			http.Error(w, "The path is not complete", http.StatusInternalServerError)
@@ -81,21 +90,20 @@ func GetSecret() http.HandlerFunc {
 
 		result, ok := mData.Load(key)
 		if !ok {
-			http.Error(w, "No data", http.StatusInternalServerError)
+			if err := templateSecret.Execute(w, &Result{Data: "No data or the time has expired"}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
-		wData, err := json.Marshal(&struct {
-			Data string `json:"data"`
-		}{
+		err = templateSecret.Execute(w, &Result{
 			Data: result.(string),
 		})
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		_, _ = w.Write(wData)
 
+		mData.Delete(key)
 	}
 }

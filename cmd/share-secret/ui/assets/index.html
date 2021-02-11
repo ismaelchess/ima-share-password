@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <title>Share-Secret</title>
+    <style>
+      body { font-family: "Gill Sans Extrabold", Helvetica, sans-serif }
+      button {
+          background-color: #4CAF50; /* Green */
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+        }
+    </style>    
   </head>
   <body>
         <h1>Share-Secret</h1>
@@ -23,6 +36,9 @@
           <br> 
           <br>           
           <button id="btn-get">Share Data</button>
+          <br>
+          <br>          
+          <div id="dataLink" />          
         </form>
         <script>
             function handlePostSecret(secret, unit, time){
@@ -40,17 +56,29 @@
                 fetch(url, config).then(response => {
                         return response.json()
                 })
-                .then(data => console.log(data))
+               .then(function(data){
+
+                  var cont     = document.getElementById('dataLink')
+                  var a        = document.createElement('a');
+                  var linkText = document.createTextNode(data.uri);
+                  a.appendChild(linkText);
+                  a.title = data.uri;
+                  a.target = "_blank";
+                  a.href = data.uri;
+                  cont.appendChild(a);
+
+               })
             }
 
            const load = () => {
-                var btn = document.getElementById("btn-get")
-
+                var btn    = document.getElementById("btn-get")
+                
                 btn.addEventListener("click",function(e){
                     e.preventDefault()
                     var input     = document.getElementById('secret')
                     var cbo_u     = document.getElementById('unit')
                     var input_t   = document.getElementById('time')
+                    
                 
                   if (input.value == '') {
                     alert('The secret value is required');

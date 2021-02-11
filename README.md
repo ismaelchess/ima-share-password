@@ -20,4 +20,4 @@ Will start a docker-compose file which will listen for changes and recompile whe
 
 ## Use
 
-Browse ./cmd/share-secret/ui/assets/index.html` on your repository path to see a sample response
+Browse ./cmd/share-secret/ui/assets/index.html` on your repository path to see a sample response. The generated URL shows the saved data.
