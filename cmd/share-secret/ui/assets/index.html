@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <title>Share-Secret</title>
+    <style>
+      body { font-family: "Gill Sans Extrabold", Helvetica, sans-serif }
+      button {
+          background-color: #4CAF50; /* Green */
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+        }
+    </style>    
   </head>
   <body>
         <h1>Share-Secret</h1>
@@ -24,6 +37,7 @@
           <br>           
           <button id="btn-get">Share Data</button>
           <br>
+          <br>          
           <div id="dataLink" />          
         </form>
         <script>
@@ -49,6 +63,7 @@
                   var linkText = document.createTextNode(data.uri);
                   a.appendChild(linkText);
                   a.title = data.uri;
+                  a.target = "_blank";
                   a.href = data.uri;
                   cont.appendChild(a);
 
