@@ -90,9 +90,9 @@ func GetSecret() http.HandlerFunc {
 
 		result, ok := mData.Load(key)
 		if !ok {
-			templateSecret.Execute(w, &Result{
-				Data: "No data or the time has expired",
-			})
+			if err := templateSecret.Execute(w, &Result{Data: "No data or the time has expired"}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
@@ -105,17 +105,5 @@ func GetSecret() http.HandlerFunc {
 		}
 
 		mData.Delete(key)
-
-		// wData, err := json.Marshal(&struct {
-		// 	Data string `json:"data"`
-		// }{
-		// 	Data: result.(string),
-		// })
-
-		// if err != nil {
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-		//_, _ = w.Write(wData)
 	}
 }
