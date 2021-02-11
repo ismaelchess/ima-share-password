@@ -51,9 +51,7 @@ func PostSecret() http.HandlerFunc {
 
 		keyData := input.GetKey()
 		mData.Store(keyData, input.Secret)
-
 		time.AfterFunc(input.expirationDate(), func() {
-			fmt.Println("Borrado")
 			mData.Delete(keyData)
 		})
 
